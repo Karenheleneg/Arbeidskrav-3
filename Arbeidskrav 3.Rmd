@@ -180,13 +180,11 @@ for(i in 1:1000) {
   
 }
 
-
 # Save the results in a combined data frame
 
 results_null <- bind_rows(results_8, results_40)
 
 # Histogram med en populasjon med en gjennomsnittlig effekt på null
-
 
 results_null %>%
   ggplot(aes(pval)) + 
@@ -198,11 +196,14 @@ results_null %>%
   group_by(n) %>%
   summarise(sig_results = n()/1000)
 
-print()
+  print()
+
 ```
 
 Spørsmål:
 
   8. Med et signifikansnivå på 5%, hvor mange studier ville gitt deg et "falskt positivt" resultat dersom du repeterte studien mange ganger? 
 
-Dersom man har et signifikansnivå på 5%, ville 4,5% av studiene med en utvalgsstørrelse på 8 gi et falskt positivt resultat dersom studien ble repetert mange ganger, mens 3,9% av tilfellene ville gitt et falskt positivt resultat ved utvalgsstørrelse 40. 
+Dersom man har et signifikansnivå på 5%, ville 4,4% av studiene med en utvalgsstørrelse på 8 gi et falskt positivt resultat dersom studien ble repetert mange ganger, mens 4,9% av tilfellene ville gitt et falskt positivt resultat ved utvalgsstørrelse 40. 
+
+** Noe er galt i oppgave 8. Får ulike tall og error hver gang vi kjører koden ** 
