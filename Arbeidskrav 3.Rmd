@@ -1,0 +1,11 @@
+---
+title: "Arbeidskrav 3"
+author: "Karen Grøndalen"
+date: "4 11 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+```
+
