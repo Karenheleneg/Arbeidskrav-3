@@ -34,13 +34,16 @@ Spørsmål:
 
   1. Forklar estimatet, SE, t-verdi og p-verdi fra regresjonsmodellen (m1 og m2)
     
-    
+    I M1 (n 8) har man et estimat på 1,840, SE på 1,1251, T-verdi på 1,47 og en P-verdi på 1,185.I M2 er estimatet 1,5642, SE 0,4774, T-verdi 3,276 og p-verdi 0,00221. Alle dise verdiene er avhengig av hverandre, hvor t-verdi kan beregnes som forholdet mellom estimatet og SE (standardfeilen)og p-verdien avhenger av t-verdien. P-verdien sier noe om hvor stor sannsynlighet det er for å finne det gitte resultatet gitt at null-hypotesen er sann. I M1 ser man en relativt lav t-verdi, som gir en høy p-verdi. I M2 ser man en høy t-verdi, som igjen gir en lav p-verdi. Man ser også at standardfeilen er lavere i M2 sammenlignet med M1 som igjen er med på å forklare forskjellene i t-verdi og p-verdi. 
 
   2. Diskuter hva som bidrar til de ulike resulatatene i de to studiene (m1 og m2)
   
-  
+  Hovedgrunnen som bidrar til de ulike resultatene i de to studiene m1 og m2 er størelse på poppulasjonen i studiene. m1 har en utvalgsstørrelse. på 8 mens m2 har en utvalgsstørrelse. på 40. Ettersom m2 har en større størelse enn m1 vil det gi en større statisktisk styrke. Dette er fordi det er fler observasjoner som påvirker gjennomsnittet.I m1 er standardfeilen høyere (1,251) enn i m2 (0,4774), noe som påvirker den gitte t-verdi og p-verdi i de ulike studiene. Standardfeilen er igjen påvirket av utvalgsstørrelse.  
   
   3. Hvorfor bruker vi det skyggede området i nedre og øvre hale av t-distribusjonen? (grafen)
+  
+  Det skyggede området brukes for å forklare hvor langt eller tett på gjennomsnittet man er i den gitte studien. 
+  
 
 ```{r}
 
@@ -85,16 +88,57 @@ for(i in 1:1000) {
 
 results <- bind_rows(results_8, results_40)
 
+# Utregning oppgave 4: Standardavvik av estimatet, gjennomsnitt av SE
+
+results %>%
+  group_by(n) %>%
+  summarise(sd(estimate), mean(se)) %>%
+  
+ print()
+
+# lag et histogram av p-verdiene fra hver studies utvalgsstørrelse
+
+results %>%
+  ggplot(aes(pval)) + 
+  geom_histogram() +
+  facet_wrap(~ n)
+
+# Beregn antall studier fra hver utvalgsstørrelse som erklærer en statistisk signifikant effekt
+
+results %>%
+  filter(pval < 0.05) %>%
+  group_by(n) %>%
+  summarise(sig_results = n()/1000)
+
+#  Bruk pwr-pakken til å beregne kraften til en t-test med èn prøve
+
+library(pwr)
+pwr40 <- pwr.t.test(n = 40, sig.level = 0.05, d = 1.5/3, type = "one.sample") %>%
+  
+  print()
+pwr8 <- pwr.t.test(n = 8, sig.level = 0.05, d = 1.5/3, type = "one.sample") %>%
+
+print()
+
 ```
+
 
 Spørsmål:
   4. Beregn standardavviket av 'estimate' variabelen, og gjennomsnittet av SE-variabelen for hver av studienes utvalgsstørrelser (8 og 40). Forklar hvorfor disse tallene er veldig like. Hvordan kan du definere standardfeilen (SE) i lys av disse beregningene? 
 
-  5. Lag et histogram (se eksempelkode) av p-verdiene fra hver studies samplesize. Hvordan tolker du disse histogrammene, og hva forteller de deg om effekten av sample size på statistisk styrke? 
+  Standardavviket av estimatet for de to studiene er 1,06 for studien med n 8, og 0,473 for studien med n 40. Gjennomsnittet av SE i studiene er henholdsvis 1,03 for n 8 og 0,470 for n40. Standardavviket og gjennomsnittet er relativt like, når man gjør en studie 1000 ganger fører dette til at standardfeilen og standardavviket til utvalget jevner seg ut, noe som igjen betyr at det er et representativt utvalg. Ut fra disse beregningene kan se at standardfeilen blir påvirket av utvalgsstørrelsen. 
 
-  6. Beregn antall studier fra hver sample size som erklærer en statistisk signifikant effekt (spesifiser en tersken for 'alfa' for ditt signifikansnivå)
+  5. Lag et histogram (se eksempelkode) av p-verdiene fra hver studies utvalgsstørrelse. Hvordan tolker du disse histogrammene, og hva forteller de deg om effekten av utvalgsstørrelse på statistisk styrke? 
 
-  7. Bruk pwr-pakken til å beregne kraften til en t-test med èn prøve, med en effektstørrelse på 1,5/3, ditt spesifiserte signifikansnivå og sample size 8 og 40. Forklar resultatene i lys av simuleringene dine. 
+  Ut i fra histogrammene ser man at det kan være en større sannsynlighet for å finne antatt ekstreme resultater ved utvalgsstørrelse 40 enn ved 8. 
+
+  6. Beregn antall studier fra hver utvalgsstørrelse som erklærer en statistisk signifikant effekt (spesifiser en tersken for 'alfa' for ditt signifikansnivå)
+  
+  I studiene med n 8 er det 22,7% som erklærer en statistisk signifikant effekt (p < 0,05) mens i studiene med n 40 vil 86,5% av studiene erklære statitisk signifikant effekt. 
+
+  7. Bruk pwr-pakken til å beregne kraften til en t-test med èn prøve, med en effektstørrelse på 1,5/3, ditt spesifiserte signifikansnivå og sample size 8 og 40. Forklar resultatene i lys av simuleringene dine.
+  
+  Kraften til en t-test med utvalgsstørrelse 8 gir en statistisk power på 23%, kraften til en t-test med utvalgsstørrelse 40 gir en statistisk power på 87%. Dette samsvarer med resultater fra tidligere simuleringer hvor man får en høyere statistisk power jo høyere utvalgsstørrelsen er. 
 
 ```{r}
 population <- rnorm(1000000, mean = 0, sd = 3)
@@ -141,8 +185,24 @@ for(i in 1:1000) {
 
 results_null <- bind_rows(results_8, results_40)
 
+# Histogram med en populasjon med en gjennomsnittlig effekt på null
+
+
+results_null %>%
+  ggplot(aes(pval)) + 
+  geom_histogram() +
+  facet_wrap(~ n) %>%
+
+results_null %>%
+  filter(pval < 0.05) %>%
+  group_by(n) %>%
+  summarise(sig_results = n()/1000)
+
+print()
 ```
 
 Spørsmål:
 
   8. Med et signifikansnivå på 5%, hvor mange studier ville gitt deg et "falskt positivt" resultat dersom du repeterte studien mange ganger? 
+
+Dersom man har et signifikansnivå på 5%, ville 4,5% av studiene med en utvalgsstørrelse på 8 gi et falskt positivt resultat dersom studien ble repetert mange ganger, mens 3,9% av tilfellene ville gitt et falskt positivt resultat ved utvalgsstørrelse 40. 
